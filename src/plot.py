@@ -47,6 +47,9 @@ def plot_fusions(
         left_coordinates_dataframe.to_csv("left.bed", index=False,sep="\t")
         right_coordinates_dataframe.to_csv("right.bed", index=False, sep="\t")
         command = [#type:ignore
+                "singularity",
+                "exec",
+                "/storage/scratch1/folder_devendra/visualize_fusion/fusion_plotting.sif",
                 "Rscript",
                 "plot.R",
                 "-l",
@@ -84,17 +87,14 @@ def plot_fusions(
         "success":False
     }
 
-# genes_fusion = []
-# fusions = "20900134532_fusions.tsv"
-# for line in open(fusions, 'r').readlines():
-#     if "#FusionName" not in line:
-#         l = [l.strip() for l in line.split()]
-#         k=l[0].split("--")
-#         genes_fusion.append([k[0], k[1]])#type:ignore
+genes_fusion = []
+fusions = "/storage/scratch1/folder_devendra/visualize_fusion/fusion_visualization/test_data/sample_fusions.tsv"
+for line in open(fusions, 'r').readlines():
+    if "#FusionName" not in line:
+        l = [l.strip() for l in line.split()]
+        k=l[0].split("--")
+        genes_fusion.append([k[0], k[1]])#type:ignore
 
-# #print(genes_fusion)
-# a=plot_fusions(genes_fusion, pdf_output = "2new_output.pdf")
-# print(a["message"])
-
-
-    
+#print(genes_fusion)
+a=plot_fusions(genes_fusion, pdf_output = "2new_output.pdf")
+print(a)
