@@ -47,9 +47,6 @@ def plot_fusions(
         left_coordinates_dataframe.to_csv("left.bed", index=False,sep="\t")
         right_coordinates_dataframe.to_csv("right.bed", index=False, sep="\t")
         command = [#type:ignore
-                "singularity",
-                "exec",
-                "/storage/scratch1/folder_devendra/visualize_fusion/fusion_plotting.sif",
                 "Rscript",
                 "plot.R",
                 "-l",
@@ -59,11 +56,13 @@ def plot_fusions(
                 "-o",
                 pdf_output
                 ]
+        jpeg_image = pdf_output.replace(".pdf","_image.jpeg")
+
         run_status = subprocess.run(command)#type:ignore
-        if os.path.exists(pdf_output):#type:ignore
-            with open(pdf_output, 'rb') as file:#type:ignore
-                pdf_data = file.read()
-            base64_data = base64.b64encode(pdf_data).decode('utf-8')
+        if os.path.exists(jpeg_image):#type:ignore
+            with open(jpeg_image, 'rb') as file:#type:ignore
+                image_data = file.read()
+            base64_data = base64.b64encode(image_data).decode('utf-8')
             return {
             "data": base64_data,
             "message": message,
@@ -88,7 +87,7 @@ def plot_fusions(
     }
 
 genes_fusion = []
-fusions = "/storage/scratch1/folder_devendra/visualize_fusion/fusion_visualization/test_data/sample_fusions.tsv"
+fusions = "test.tsv"
 for line in open(fusions, 'r').readlines():
     if "#FusionName" not in line:
         l = [l.strip() for l in line.split()]
@@ -96,5 +95,10 @@ for line in open(fusions, 'r').readlines():
         genes_fusion.append([k[0], k[1]])#type:ignore
 
 #print(genes_fusion)
-a=plot_fusions(genes_fusion, pdf_output = "2new_output.pdf")
+a=plot_fusions(genes_fusion, pdf_output = "test123.pdf")
+da = base64.b64decode(a["data"])
+img_file = open('image.jpeg', 'wb')
+img_file.write(da)
+img_file.close()
+
 print(a)
